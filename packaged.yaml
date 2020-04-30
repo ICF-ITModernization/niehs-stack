@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'niehs-sam
+
+  Sample SAM Template for niehs-sam
+
+  '
+Globals:
+  Function:
+    Timeout: 60
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://niehs-cebs-demo/845ecca646c4f40a8e6b637431329b48
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        FileAddedEvent:
+          Type: S3
+          Properties:
+            Bucket:
+              Ref: ConversionS3
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                - Name: prefix
+                  Value: input
+      Policies:
+        S3FullAccessPolicy:
+          BucketName: niehs-excel-conversion
+  ConversionS3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: niehs-excel-conversion
