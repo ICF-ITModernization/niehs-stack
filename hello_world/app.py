@@ -22,7 +22,9 @@ def lambda_handler(event, context):
 		csv_buf = six.StringIO()
 		excel_df.to_csv(csv_buf, header=True, index=False)
 		csv_buf.seek(0)
-		s3.put_object(Bucket=bucketname, Body=csv_buf.getvalue(), Key= 'inputs/'+filename[:-5]+'/'+filename[:-5]+'.csv')		
+		s3.put_object(Bucket=bucketname, Body=csv_buf.getvalue(), Key= 'inputs/'+filename[:-5]+'/'+filename[:-5]+'.csv')	
+		client = boto3.client('glue', 'us-east-1')
+      	print("client = ", client)
 	return {
 	"statusCode": 'It Works'
 	}
