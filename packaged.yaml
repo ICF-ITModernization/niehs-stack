@@ -12,7 +12,7 @@ Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://niehs-cebs-demo/bfeb23ead046a801717a81cca05cb446
+      CodeUri: s3://niehs-cebs-demo/3170cc60e79a1338b3a3b485b219fc91
       Handler: app.lambda_handler
       Runtime: python3.8
       Events:

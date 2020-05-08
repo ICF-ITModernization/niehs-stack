@@ -9,20 +9,28 @@ s3_client = boto3.client('s3')
 
 def lambda_handler(event, context):
 	s3 = boto3.client('s3')
+	glue = boto3.client(service_name='glue')
 	
 	print(event)
 	if event:
 		file_obj = event["Records"][0]
 		bucketname = str(file_obj['s3']['bucket']['name'])
 		filename = str(file_obj['s3']['object']['key'])
-		print(filename)
+		filename2=filename.replace("inputs/","")
 		print(bucketname)
+		print(filename)
+		print(filename2)
 		obj = s3.get_object(Bucket=bucketname, Key=filename)
 		excel_df = pd.read_excel(six.BytesIO(obj['Body'].read()), encoding='utf-8')
 		csv_buf = six.StringIO()
 		excel_df.to_csv(csv_buf, header=True, index=False)
 		csv_buf.seek(0)
-		s3.put_object(Bucket=bucketname, Body=csv_buf.getvalue(), Key= 'outputs/'+filename[:-5]+'/'+filename[:-5]+'.csv')	
+		s3.put_object(Bucket=bucketname, Body=csv_buf.getvalue(), Key= 'outputs/'+filename2[:-5]+'/'+filename2[:-5]+'.csv')
+		glue.start_crawler(Name='nieh-crawler-athena')
+		print('Crawler Run Initiated')
+		#s3.put_object(Bucket=bucketname, Body=csv_buf.getvalue(), Key= 'outputs/'+filename[:-5]+'/'+filename[:-5]+'.csv')	
+		#s3.put_object(Bucket=bucketname, Key=(directory+'/'))
+	
 	return {
 	"statusCode": 'It Works'
 	}
@@ -54,10 +62,10 @@ def main():
 	          "ownerIdentity": {
 	            "principalId": "EXAMPLE"
 	          },
-	          "arn": "arn:aws:s3:::example-bucket"
+	          "arn": "arn:aws:s3:::niehs-excel-conversion"
 	        },
 	        "object": {
-	          "key": "toxicology.xls",
+	          "key": "inputs/toxicologydata.xlsx",
 	          "size": 1024,
 	          "eTag": "0123456789abcdef0123456789abcdef",
 	          "sequencer": "0A1B2C3D4E5F678901"
@@ -71,5 +79,4 @@ def main():
 	
 	
 if __name__ == "__main__": 
-	main() 
-
+	main()
