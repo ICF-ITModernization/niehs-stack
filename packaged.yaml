@@ -12,9 +12,11 @@ Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://niehs-cebs-demo/3170cc60e79a1338b3a3b485b219fc91
+      CodeUri: s3://niehs-cebs-demo/561f93fb40d7996117de1f52897af2f7
       Handler: app.lambda_handler
       Runtime: python3.8
+      Tags:
+        Type: Niehs
       Events:
         FileAddedEvent:
           Type: S3
@@ -28,8 +30,14 @@ Resources:
                 - Name: prefix
                   Value: inputs
       Policies:
-        S3FullAccessPolicy:
+      - S3FullAccessPolicy:
           BucketName: niehs-excel-conversion
+      - Statement:
+        - Sid: GluePermissions
+          Effect: Allow
+          Action:
+          - glue:StartCrawler
+          Resource: '*'
   ConversionS3:
     Type: AWS::S3::Bucket
     Properties:

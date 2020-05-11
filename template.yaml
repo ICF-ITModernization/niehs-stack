@@ -17,6 +17,8 @@ Resources:
       CodeUri: hello_world/
       Handler: app.lambda_handler
       Runtime: python3.8
+      Tags: 
+        Type: Niehs
       Events:
         FileAddedEvent:
           Type: S3
@@ -30,10 +32,19 @@ Resources:
                     Value: inputs
       Policies:
           #S3CrudPolicy:
-        S3FullAccessPolicy:
-          BucketName: "niehs-excel-conversion" 
+          - S3FullAccessPolicy:
+              BucketName: "niehs-excel-conversion" 
+          - Statement:
+            - Sid: GluePermissions
+              Effect: Allow
+              Action:
+              - glue:StartCrawler
+              Resource: "*"
+
   ConversionS3:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: "niehs-excel-conversion" 
-        
+
+
+
